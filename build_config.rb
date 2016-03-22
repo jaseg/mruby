@@ -22,15 +22,15 @@ MRuby::Build.new do |conf|
   # include the default GEMs
   conf.gembox 'default'
   # C compiler settings
-  # conf.cc do |cc|
+  conf.cc do |cc|
   #   cc.command = ENV['CC'] || 'gcc'
-  #   cc.flags = [ENV['CFLAGS'] || %w()]
+    cc.flags = [ENV['CFLAGS'] || %w()] + ['-fPIC']
   #   cc.include_paths = ["#{root}/include"]
   #   cc.defines = %w(DISABLE_GEMS)
   #   cc.option_include_path = '-I%s'
   #   cc.option_define = '-D%s'
   #   cc.compile_options = "%{flags} -MMD -o %{outfile} -c %{infile}"
-  # end
+  end
 
   # mrbc settings
   # conf.mrbc do |mrbc|
@@ -38,9 +38,9 @@ MRuby::Build.new do |conf|
   # end
 
   # Linker settings
-  # conf.linker do |linker|
+  conf.linker do |linker|
   #   linker.command = ENV['LD'] || 'gcc'
-  #   linker.flags = [ENV['LDFLAGS'] || []]
+    linker.flags = [ENV['LDFLAGS'] || []] + ['-fPIC']
   #   linker.flags_before_libraries = []
   #   linker.libraries = %w()
   #   linker.flags_after_libraries = []
@@ -48,7 +48,7 @@ MRuby::Build.new do |conf|
   #   linker.option_library = '-l%s'
   #   linker.option_library_path = '-L%s'
   #   linker.link_options = "%{flags} -o %{outfile} %{objs} %{libs}"
-  # end
+  end
 
   # Archiver settings
   # conf.archiver do |archiver|
@@ -80,9 +80,10 @@ MRuby::Build.new do |conf|
 
   # bintest
   # conf.enable_bintest
+  conf.gem :github => 'mattn/mruby-sharedlib'
 end
 
-MRuby::Build.new('host-debug') do |conf|
+MRuby::Build.new('host-debug-shared') do |conf|
   # load specific toolchain settings
 
   # Gets set by the VS command prompts.
@@ -106,41 +107,3 @@ MRuby::Build.new('host-debug') do |conf|
   # bintest
   # conf.enable_bintest
 end
-
-MRuby::Build.new('test') do |conf|
-  # Gets set by the VS command prompts.
-  if ENV['VisualStudioVersion'] || ENV['VSINSTALLDIR']
-    toolchain :visualcpp
-  else
-    toolchain :gcc
-  end
-
-  enable_debug
-  conf.enable_bintest
-  conf.enable_test
-
-  conf.gembox 'default'
-end
-
-MRuby::Build.new('bench') do |conf|
-  toolchain :gcc
-
-  conf.cc.flags << '-O3'
-
-  conf.gembox 'default'
-end
-
-# Define cross build settings
-# MRuby::CrossBuild.new('32bit') do |conf|
-#   toolchain :gcc
-#
-#   conf.cc.flags << "-m32"
-#   conf.linker.flags << "-m32"
-#
-#   conf.build_mrbtest_lib_only
-#
-#   conf.gem 'examples/mrbgems/c_and_ruby_extension_example'
-#
-#   conf.test_runner.command = 'env'
-#
-# end
