@@ -94,9 +94,6 @@ module MRuby
 
       MRuby::Build.current = MRuby.targets[@name]
       MRuby.targets[@name].instance_eval(&block)
-
-      build_mrbc_exec if name == 'host'
-      build_mrbtest if test_enabled?
     end
 
     def enable_debug
@@ -179,10 +176,6 @@ EOS
 
     def test_enabled?
       @enable_test
-    end
-
-    def build_mrbtest
-      gem :core => 'mruby-test'
     end
 
     def build_mrbc_exec
